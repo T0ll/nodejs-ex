@@ -5,7 +5,7 @@ var app     = express();
 var eps     = require('ejs');
 var rest_client = require('node-rest-client').Client;
 var client = new rest_client();
-var openshift_url = "https://10.100.203.0:8443/api/v1/namespaces/quota-demo/replicationcontrollers/frontend-1";
+var openshift_url = "https://10.100.203.0:8443/api/v1/namespaces/auto-scaling/replicationcontrollers/nodejs-ex-1";
 
 function apply_config(data){
                 var args = {
