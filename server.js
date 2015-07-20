@@ -3,6 +3,20 @@ var express = require('express');
 var fs      = require('fs');
 var app     = express();
 var eps     = require('ejs');
+var rest_client = require('node-rest-client').Client;
+var client = new rest_client();
+var openshift_url = "https://10.100.203.0:8443/api/v1/namespaces/quota-demo/replicationcontrollers/frontend-1";
+
+function apply_config(data){
+                var args = {
+                  data: data,
+                  headers:{"Content-Type": "application/json"}
+                };
+                client.put(openshift_url, args, function(data,response) {
+                    console.log("PUT worked");
+                    console.log(data);
+                });
+        }
 
 app.engine('html', require('ejs').renderFile);
 
@@ -51,16 +65,11 @@ var initDb = function(callback) {
 };
 
 app.get('/', function (req, res) {
-  if (db) {
-    var col = db.collection('counts');
-    // Create a document with request IP and current time of request
-    col.insert({ip: req.ip, date: Date.now()});
-    col.count(function(err, count){
-      res.render('index.html', { pageCountMessage : count, dbInfo: dbDetails });
-    });
-  } else {
-    res.render('index.html', { pageCountMessage : null});
-  }
+client.get(openshift_url,function(data, response){
+    console.log(data);
+    res.render('index.html', {replicaCount:data["spec"]["replicas"]});
+  });
+
 });
 
 app.get('/pagecount', function (req, res) {
