@@ -6,14 +6,26 @@ var app     = express();
 var eps     = require('ejs');
 var rest_client = require('node-rest-client').Client;
 var client = new rest_client();
-var openshift_url = "https://10.100.203.0:8443/api/v1/namespaces/auto-scaling/replicationcontrollers/nodejs-ex-";
 
-function apply_config(i,data){
+
+function get_config(i,callback){
+  var openshift_url = "https://10.100.203.0:8443/api/v1/namespaces/auto-scaling/replicationcontrollers/nodejs-ex-"+i;
+  client.get(openshift_url,function(data, response){
+    console.log(data);
+    if(data["spec"]["replicas"]>=1){
+      callback(get_result);
+    }else{
+      get_config(i++, callback);
+    }
+  });
+}
+
+function apply_config(url,data){
                 var args = {
                   data: data,
                   headers:{"Content-Type": "application/json"}
                 };
-                client.put(openshift_url+i, args, function(data,response) {
+                client.put(url, args, function(data,response) {
                     console.log("PUT worked");
                     console.log(data);
                 });
@@ -66,18 +78,13 @@ var initDb = function(callback) {
 };
 
 app.get('/', function (req, res) {
-  var i=0;
-  var get_result;
-  do{
-  i++;
-  client.get(openshift_url+i,function(data, response){
-    console.log(data);
-    get_result=data;
-  });
-  }while(get_result["spec"]["replicas"]>=1);
-  res.render('index.html', {replicaCount:get_result["spec"]["replicas"]});
-  get_result["spec"]["replicas"]++;
-  apply_config(i,get_result);
+  get_config(1, function(get_result){
+    res.render('index.html', {replicaCount:get_result["spec"]["replicas"]});
+    
+  }
+  )
+  
+  
 });
 
 app.get('/pagecount', function (req, res) {
