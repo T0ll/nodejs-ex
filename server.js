@@ -7,18 +7,8 @@ var eps     = require('ejs');
 var rest_client = require('node-rest-client').Client;
 var client = new rest_client();
 
+var openshift_url = "https://10.100.203.0:8443/api/v1/namespaces/auto-scaling/replicationcontrollers/nodejs-ex-1";
 
-function get_config(i,callback){
-  var openshift_url = "https://10.100.203.0:8443/api/v1/namespaces/auto-scaling/replicationcontrollers/nodejs-ex-"+i;
-  client.get(openshift_url,function(data, response){
-    console.log(data);
-    if(data["spec"]["replicas"]>=1){
-      callback(get_result);
-    }else{
-      get_config(i++, callback);
-    }
-  });
-}
 
 function apply_config(url,data){
                 var args = {
@@ -78,11 +68,11 @@ var initDb = function(callback) {
 };
 
 app.get('/', function (req, res) {
-  get_config(1, function(get_result){
-    res.render('index.html', {replicaCount:get_result["spec"]["replicas"]});
-    
-  }
-  )
+  client.get(openshift_url,function(data, response){
+    res.render('index.html', {replicaCount:data["spec"]["replicas"]});
+  });
+}
+)
   
   
 });
