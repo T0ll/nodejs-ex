@@ -26,7 +26,9 @@ function apply_config(data){
         }
 
 var job = new CronJob('00 */5 * * * *', function(){
+	console.log('Running the cron');
 	client.get(openshift_url,function(data, response){
+		console.log('GET worked');
 	 	data["spec"]["replicas"]=5;
 	 	apply_config(data);
   	});
