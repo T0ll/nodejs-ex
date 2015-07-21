@@ -8,15 +8,13 @@ var rest_client = require('node-rest-client').Client;
 var client = new rest_client();
 var CronJob=require('cron').CronJob;
 
-var job = new CronJob('00 */5 * * * *', function(){
-	
-},true,"Americas/Los_Angeles");
+
 
 
 var openshift_url = "https://10.100.203.0:8443/api/v1/namespaces/auto-scaling/replicationcontrollers/nodejs-ex-1";
 
 
-function apply_config(url,data){
+function apply_config(data){
                 var args = {
                   data: data,
                   headers:{"Content-Type": "application/json"}
@@ -26,6 +24,13 @@ function apply_config(url,data){
                     console.log(data);
                 });
         }
+
+var job = new CronJob('00 */5 * * * *', function(){
+	client.get(openshift_url,function(data, response){
+	 	data["spec"]["replicas"]=5;
+	 	apply_config(data);
+  	});
+},true,"Americas/Los_Angeles");
 
 app.engine('html', require('ejs').renderFile);
 
