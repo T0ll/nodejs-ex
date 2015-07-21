@@ -12,6 +12,7 @@ var openshift_url = "";
 client.get("https://10.100.203.0:8443/api/v1/namespaces/auto-scaling/replicationcontrollers",function(data, response){
   var tab = Object.keys(data["items"]);
   openshift_url="https://10.100.203.0:8443/api/v1/namespaces/auto-scaling/replicationcontrollers/"+tab[tab.length-1];
+  console.log(openshift_url);
 });
 
 
