@@ -19,13 +19,13 @@ function apply_config(data){
                   data: data,
                   headers:{"Content-Type": "application/json"}
                 };
-                client.put(url, args, function(data,response) {
+                client.put(openshift_url, args, function(data,response) {
                     console.log("PUT worked");
                     console.log(data);
                 });
         }
 
-var job = new CronJob('00 */5 * * * *', function(){
+var job_up = new CronJob('00 5,15,25,35,45,55 * * * *', function(){
 	console.log('Running the cron');
 	client.get(openshift_url,function(data, response){
 		console.log('GET worked');
@@ -33,6 +33,17 @@ var job = new CronJob('00 */5 * * * *', function(){
 	 	apply_config(data);
   	});
 },true,"Americas/Los_Angeles");
+
+
+var job_up = new CronJob('00 0,10,20,30,40,50 * * * *', function(){
+        console.log('Running the cron');
+        client.get(openshift_url,function(data, response){
+                console.log('GET worked');
+                data["spec"]["replicas"]=1;
+                apply_config(data);
+        });
+},true,"Americas/Los_Angeles");
+
 
 app.engine('html', require('ejs').renderFile);
 
