@@ -6,6 +6,11 @@ var app     = express();
 var eps     = require('ejs');
 var rest_client = require('node-rest-client').Client;
 var client = new rest_client();
+var CronJob=require('cron').CronJob;
+
+var job = new CronJob('00 */5 * * * *', function(){
+	
+},true,"Americas/Los_Angeles");
 
 
 var openshift_url = "https://10.100.203.0:8443/api/v1/namespaces/auto-scaling/replicationcontrollers/nodejs-ex-1";
