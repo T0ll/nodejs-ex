@@ -72,10 +72,7 @@ app.get('/', function (req, res) {
     res.render('index.html', {replicaCount:data["spec"]["replicas"]});
   });
 }
-)
-  
-  
-});
+);
 
 app.get('/pagecount', function (req, res) {
   if (db) {
